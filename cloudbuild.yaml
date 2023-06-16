@@ -1,0 +1,20 @@
+steps:
+  # Build the maven extensions if any
+#  - name: maven:3-openjdk-18-slim
+#    entrypoint: mvn
+#    args: [ '-pl','kc-extensions','-amd','clean','package' ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '--build-arg', 'KEYCLOAK_VERSION=${_KEYCLOAK_VERSION}', '-t', '${_IMAGE_PATH_SHA}', '.']
+  # Automatically build and Deploy container image to Cloud Run
+#  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#    entrypoint: gcloud
+#    args: ['run', 'deploy', 'keycloak-on-cloudrun', '--image', '$_IMAGE_PATH_SHA', '--region', '$LOCATION']
+substitutions:
+  _IMAGE_NAME: 'ineat-keycloak-on-cloudrun'
+  _IMAGE_PATH_SHA: 'europe-west1-docker.pkg.dev/${PROJECT_ID}/docker-registry/${_IMAGE_NAME}:${SHORT_SHA}'
+  _KEYCLOAK_VERSION: 20.0.2
+images:
+  - '${_IMAGE_PATH_SHA}'
+
+options:
+  dynamic_substitutions: true
